@@ -32,7 +32,9 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 productMapper.toDto(
                         productService.createProduct(
-                                productMapper.toEntity(dto)
+                                productMapper.toEntity(dto),
+                                dto.categoryId(),
+                                dto.supplierId()
                         )
                 )
         );
@@ -52,7 +54,9 @@ public class ProductController {
                 productMapper.toDto(
                         productService.replaceProduct(
                                 id,
-                                productMapper.toEntity(dto)
+                                productMapper.toEntity(dto),
+                                dto.categoryId(),
+                                dto.supplierId()
                         )
                 )
         );
