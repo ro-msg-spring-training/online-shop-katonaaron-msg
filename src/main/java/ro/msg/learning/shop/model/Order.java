@@ -1,9 +1,6 @@
 package ro.msg.learning.shop.model;
 
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -26,8 +23,13 @@ public class Order extends EntityWithId {
     private LocalDateTime createdAt;
 
     @Embedded
-    private Address address;
+    private Address deliveryAddress;
 
-    @OneToMany(mappedBy = "order")
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private Set<OrderDetail> orderDetails;
+
+    public void setOrderDetails(Set<OrderDetail> orderDetails) {
+        this.orderDetails = orderDetails;
+        orderDetails.forEach(od -> od.setOrder(this));
+    }
 }

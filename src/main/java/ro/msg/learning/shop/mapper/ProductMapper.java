@@ -9,7 +9,7 @@ import ro.msg.learning.shop.model.Product;
 import java.util.Collection;
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper
 public interface ProductMapper {
 
     @Mapping(target = "categoryName", expression = "java(product.getCategory().getName())")
