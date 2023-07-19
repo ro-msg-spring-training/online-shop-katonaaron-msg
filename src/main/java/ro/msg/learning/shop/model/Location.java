@@ -1,5 +1,6 @@
 package ro.msg.learning.shop.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
@@ -19,6 +20,11 @@ public class Location extends EntityWithId {
     @Embedded
     private Address address;
 
-    @OneToMany(mappedBy = "location")
+    @OneToMany(mappedBy = "location", cascade = CascadeType.ALL)
     private Set<Stock> stocks;
+
+    public void setStocks(Set<Stock> stocks) {
+        this.stocks = stocks;
+        stocks.forEach(stock -> stock.setLocation(this));
+    }
 }

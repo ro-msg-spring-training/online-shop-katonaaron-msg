@@ -16,4 +16,9 @@ public class OrderDetail extends EntityWithId {
     @ManyToOne
     private Product product;
     private Integer quantity;
+
+    public OrderDetail(Product product, Integer quantity) {
+        this.product = product;
+        this.quantity = quantity;
+    }
 }
