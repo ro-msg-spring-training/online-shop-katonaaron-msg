@@ -6,18 +6,12 @@ import org.springframework.transaction.annotation.Transactional;
 import ro.msg.learning.shop.dto.AddressDTO;
 import ro.msg.learning.shop.exception.OnlineShopException;
 import ro.msg.learning.shop.mapper.AddressMapper;
-import ro.msg.learning.shop.model.Customer;
-import ro.msg.learning.shop.model.Order;
-import ro.msg.learning.shop.model.OrderDetail;
-import ro.msg.learning.shop.model.Stock;
+import ro.msg.learning.shop.model.*;
 import ro.msg.learning.shop.repository.LocationRepository;
 import ro.msg.learning.shop.repository.OrderRepository;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,7 +35,7 @@ public class OrderService {
                     a.retainAll(b);
                     return a;
                 })
-                .flatMap(s -> s.stream().findFirst())
+                .flatMap(s -> s.stream().min(Comparator.comparing(Location::getId)))
                 .orElseThrow(() -> new OnlineShopException("No location was found which has the given products in stock in the given quantities"));
 
         location.getStocks().forEach(stock -> {
