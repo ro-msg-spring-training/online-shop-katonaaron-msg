@@ -5,11 +5,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ro.msg.learning.shop.dto.CreateOrderDTO;
+import ro.msg.learning.shop.dto.CreateOrderDetailDTO;
 import ro.msg.learning.shop.dto.OrderDTO;
 import ro.msg.learning.shop.mapper.OrderMapper;
 import ro.msg.learning.shop.service.OrderService;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/orders")
@@ -20,7 +23,7 @@ public class OrderController {
 
     @GetMapping("/")
     public ResponseEntity<List<OrderDTO>> findAllOrders() {
-        return ResponseEntity.status(HttpStatus.CREATED).body(
+        return ResponseEntity.ok(
                 orderMapper.toDtos(
                         orderService.findAllOrders()
                 )
@@ -29,9 +32,12 @@ public class OrderController {
 
     @PostMapping("/")
     public ResponseEntity<OrderDTO> createOrder(@RequestBody CreateOrderDTO createOrderDTO) {
-        return ResponseEntity.ok(
+        return ResponseEntity.status(HttpStatus.CREATED).body(
                 orderMapper.toDto(
-                        orderService.createOrder(createOrderDTO)
+                        orderService.createOrder(LocalDateTime.now(),
+                                createOrderDTO.deliveryAddress(),
+                                createOrderDTO.orderDetails().stream()
+                                        .collect(Collectors.toMap(CreateOrderDetailDTO::productId, CreateOrderDetailDTO::quantity)))
                 )
         );
     }
