@@ -15,9 +15,6 @@ import java.util.Set;
 public class Order extends EntityWithId {
 
     @ManyToOne
-    private Location shippedFrom;
-
-    @ManyToOne
     private Customer customer;
 
     private LocalDateTime createdAt;
