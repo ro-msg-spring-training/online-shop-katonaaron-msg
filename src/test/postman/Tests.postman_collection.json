@@ -1,0 +1,52 @@
+{
+  "info": {
+    "_postman_id": "dd4adf1e-06c4-439e-994c-7d3b667e344f",
+    "name": "Tests",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "28772547"
+  },
+  "item": [
+    {
+      "name": "Create Order Successfully",
+      "request": {
+        "method": "GET",
+        "header": []
+      },
+      "response": []
+    },
+    {
+      "name": "Create Order Missing Stock",
+      "request": {
+        "method": "GET",
+        "header": []
+      },
+      "response": []
+    },
+    {
+      "name": "Create Order Unknown ProductID",
+      "request": {
+        "method": "GET",
+        "header": []
+      },
+      "response": []
+    },
+    {
+      "name": "Export stocks",
+      "request": {
+        "method": "GET",
+        "header": []
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "product1",
+      "value": ""
+    },
+    {
+      "key": "product2",
+      "value": ""
+    }
+  ]
+}

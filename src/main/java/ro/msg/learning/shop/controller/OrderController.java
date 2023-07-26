@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ro.msg.learning.shop.dto.CreateOrderDTO;
 import ro.msg.learning.shop.dto.CreateOrderDetailDTO;
 import ro.msg.learning.shop.dto.OrderDTO;
+import ro.msg.learning.shop.mapper.AddressMapper;
 import ro.msg.learning.shop.mapper.OrderMapper;
 import ro.msg.learning.shop.service.OrderService;
 
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class OrderController {
     private final OrderService orderService;
+    private final AddressMapper addressMapper;
     private final OrderMapper orderMapper;
 
     @GetMapping("/")
@@ -39,7 +41,7 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 orderMapper.toDto(
                         orderService.createOrder(LocalDateTime.now(),
-                                createOrderDTO.deliveryAddress(),
+                                addressMapper.toEntity(createOrderDTO.deliveryAddress()),
                                 createOrderDTO.orderDetails().stream()
                                         .collect(Collectors.toMap(CreateOrderDetailDTO::productId, CreateOrderDetailDTO::quantity)))
                 )

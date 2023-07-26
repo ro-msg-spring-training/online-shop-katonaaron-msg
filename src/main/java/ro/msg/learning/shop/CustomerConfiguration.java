@@ -14,14 +14,8 @@ public class CustomerConfiguration {
      * @return
      */
     @Bean
-    Customer customer(CustomerRepository customerRepository) {
-        final var dummyCustomer = new Customer();
-        dummyCustomer.setUsername("test");
-        dummyCustomer.setFirstName("test");
-        dummyCustomer.setLastName("test");
-        dummyCustomer.setEmailAddress("test@test.com");
-        dummyCustomer.setPassword("testpassword");
+    public Customer customer(CustomerRepository customerRepository) {
         return customerRepository.findAll().stream().findFirst()
-                .orElseGet(() -> customerRepository.save(dummyCustomer));
+                .orElseGet(() -> customerRepository.save(DummyData.customer));
     }
 }

@@ -6,6 +6,7 @@ import ro.msg.learning.shop.model.OrderDetail;
 
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -14,6 +15,7 @@ public class SingleLocationSelectionAlgorithm implements LocationSelectionAlgori
     public Set<OrderDetail> selectLocationForItems(Collection<OrderDetailWithPotentialLocations> items) {
         final var location = items.stream()
                 .map(OrderDetailWithPotentialLocations::potentialLocations)
+                .map(HashSet::new)
                 .reduce((a, b) -> {
                     a.retainAll(b);
                     return a;
