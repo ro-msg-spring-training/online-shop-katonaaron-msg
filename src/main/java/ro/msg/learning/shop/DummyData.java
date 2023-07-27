@@ -1,5 +1,6 @@
 package ro.msg.learning.shop;
 
+import ro.msg.learning.shop.dto.AddressDTO;
 import ro.msg.learning.shop.model.Address;
 import ro.msg.learning.shop.model.Customer;
 import ro.msg.learning.shop.model.Location;
@@ -17,15 +18,16 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 public final class DummyData {
-    public static final Address address1;
+    public static final Address address;
+    public static final AddressDTO addressDTO;
     public static final Product product1;
     public static final Product product2;
     public static final List<Product> products;
     public static final Location locationWithEmptyStock;
-    public static final String LOCATION20_ID = "a36d5e38-2bb5-11ee-be56-0242ac120002";
-    public static final Location location20;
-    public static final String LOCATION40_ID = "b42da723-3501-4e23-82ff-763660133c6c";
-    public static final Location location40;
+    public static final String LOCATION_WITH_STOCK_20_ID = "a36d5e38-2bb5-11ee-be56-0242ac120002";
+    public static final Location locationWithStock20;
+    public static final String LOCATION_WITH_STOCK_40_ID = "b42da723-3501-4e23-82ff-763660133c6c";
+    public static final Location locationWithStock40;
     public static final Supplier supplier;
     public static final ProductCategory category;
     public static final Customer customer;
@@ -45,7 +47,8 @@ public final class DummyData {
         category.setName("TestCategory");
         category.setDescription("TestCategoryDescription");
 
-        address1 = createAddress(1);
+        address = createAddress(1);
+        addressDTO = new AddressDTO("country", "city", "county", "streetAddress");
 
         product1 = DummyData.createProduct(1);
         product2 = DummyData.createProduct(2);
@@ -53,12 +56,12 @@ public final class DummyData {
 
         locationWithEmptyStock = new Location();
         locationWithEmptyStock.setName("Location-with-empty-stock");
-        locationWithEmptyStock.setAddress(address1);
+        locationWithEmptyStock.setAddress(address);
         locationWithEmptyStock.setStocks(Collections.emptySet());
-        location20 = createLocation(20);
-        location20.setId(UUID.fromString(LOCATION20_ID));
-        location40 = createLocation(40);
-        location40.setId(UUID.fromString(LOCATION40_ID));
+        locationWithStock20 = createLocation(20);
+        locationWithStock20.setId(UUID.fromString(LOCATION_WITH_STOCK_20_ID));
+        locationWithStock40 = createLocation(40);
+        locationWithStock40.setId(UUID.fromString(LOCATION_WITH_STOCK_40_ID));
     }
 
     private DummyData() {

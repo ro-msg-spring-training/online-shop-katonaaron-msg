@@ -13,7 +13,7 @@ import java.util.Collections;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-public class TestContainerTest extends IntegrationTest {
+public class IsolationTest extends IntegrationTest {
 
     @Autowired
     LocationRepository locationRepository;
@@ -34,12 +34,12 @@ public class TestContainerTest extends IntegrationTest {
     }
 
     @Test
-    public void testTC_creation_works() {
+    public void testEmptyTableAndSaveEntity_first() {
         test();
     }
 
     @Test
-    public void testTC_recreation_works() {
+    public void testEmptyTableAndSaveEntity_second() {
         test();
     }
 

@@ -45,7 +45,7 @@ public class OrderServiceIntegrationTest extends IntegrationTest {
                     var quantity = productIdToQuantity.get(orderDetail.getProduct().getId());
                     return quantity != null
                             && quantity.equals(orderDetail.getQuantity())
-                            && DummyData.location20.equals(orderDetail.getShippedFrom());
+                            && DummyData.locationWithStock20.equals(orderDetail.getShippedFrom());
                 });
     }
 
@@ -57,7 +57,7 @@ public class OrderServiceIntegrationTest extends IntegrationTest {
 
         productRepository.saveAll(DummyData.products);
 
-        locationRepository.save(DummyData.location20);
+        locationRepository.save(DummyData.locationWithStock20);
     }
 
     @Test
