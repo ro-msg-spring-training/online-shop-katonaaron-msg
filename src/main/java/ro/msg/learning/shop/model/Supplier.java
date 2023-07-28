@@ -11,4 +11,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Supplier extends EntityWithId {
     private String name;
+
+    public Supplier(String name) {
+        this.name = name;
+    }
 }

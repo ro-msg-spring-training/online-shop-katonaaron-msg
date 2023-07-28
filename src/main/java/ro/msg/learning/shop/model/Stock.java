@@ -5,6 +5,7 @@ import jakarta.persistence.ManyToOne;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Data
@@ -15,7 +16,13 @@ public class Stock extends EntityWithId {
     private Product product;
 
     @ManyToOne
+    @ToString.Exclude
     private Location location;
 
     private Integer quantity;
+
+    public Stock(Product product, Integer quantity) {
+        this.product = product;
+        this.quantity = quantity;
+    }
 }

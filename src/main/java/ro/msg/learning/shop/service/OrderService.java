@@ -4,9 +4,9 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ro.msg.learning.shop.dto.AddressDTO;
 import ro.msg.learning.shop.exception.LocationOutOfStockException;
-import ro.msg.learning.shop.mapper.AddressMapper;
+import ro.msg.learning.shop.exception.ResourceNotFoundException;
+import ro.msg.learning.shop.model.Address;
 import ro.msg.learning.shop.model.Customer;
 import ro.msg.learning.shop.model.Location;
 import ro.msg.learning.shop.model.Order;
@@ -31,26 +31,31 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final LocationRepository locationRepository;
     private final ProductRepository productRepository;
-    private final AddressMapper addressMapper;
     private final Customer customer; // Dummy customer until Spring Security is integrated
     private final LocationSelectionAlgorithm locationSelectionAlgorithm;
 
     @Transactional
     public Order createOrder(LocalDateTime timestamp,
-                             AddressDTO deliveryAddress,
+                             Address deliveryAddress,
                              Map<UUID, Integer> productIdToQuantity) {
         final var idToProduct = productRepository.findAllById(productIdToQuantity.keySet())
                 .stream()
                 .collect(Collectors.toMap(Product::getId, a -> a));
 
         final var items = productIdToQuantity.entrySet().stream()
-                .map(entry -> OrderDetailWithPotentialLocations.builder()
-                        .potentialLocations(new HashSet<>(
-                                locationRepository.findByStocks_Product_IdAndStocks_QuantityGreaterThanEqual(
-                                        entry.getKey(), entry.getValue())))
-                        .product(idToProduct.get(entry.getKey()))
-                        .quantity(entry.getValue())
-                        .build())
+                .map(entry -> {
+                    final var productId = idToProduct.get(entry.getKey());
+                    if (productId == null) {
+                        throw new ResourceNotFoundException("Product with id \"" + entry.getKey() + "\" was not found");
+                    }
+                    return OrderDetailWithPotentialLocations.builder()
+                            .potentialLocations(new HashSet<>(
+                                    locationRepository.findByStocks_Product_IdAndStocks_QuantityGreaterThanEqual(
+                                            entry.getKey(), entry.getValue())))
+                            .product(productId)
+                            .quantity(entry.getValue())
+                            .build();
+                })
                 .toList();
 
         final var orderDetails = locationSelectionAlgorithm.selectLocationForItems(items);
@@ -63,7 +68,7 @@ public class OrderService {
         final var order = new Order();
         order.setCreatedAt(timestamp);
         order.setOrderDetails(orderDetails);
-        order.setDeliveryAddress(addressMapper.toEntity(deliveryAddress));
+        order.setDeliveryAddress(deliveryAddress);
         order.setCustomer(customer);
 
         return orderRepository.saveAndFlush(order);

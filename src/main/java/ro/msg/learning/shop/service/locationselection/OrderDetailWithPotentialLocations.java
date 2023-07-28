@@ -8,8 +8,8 @@ import java.util.Set;
 
 @Builder
 public record OrderDetailWithPotentialLocations(
-        Set<Location> potentialLocations,
         Product product,
-        Integer quantity
+        Integer quantity,
+        Set<Location> potentialLocations
 ) {
 }
