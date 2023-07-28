@@ -24,4 +24,14 @@ public class Product extends EntityWithId {
     private Supplier supplier;
 
     private String imageUrl;
+
+    public Product(String name, String description, BigDecimal price, Double weight, ProductCategory category, Supplier supplier, String imageUrl) {
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.weight = weight;
+        this.category = category;
+        this.supplier = supplier;
+        this.imageUrl = imageUrl;
+    }
 }

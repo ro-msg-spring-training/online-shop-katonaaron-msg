@@ -25,6 +25,12 @@ public class Location extends EntityWithId {
     @OneToMany(mappedBy = "location", cascade = CascadeType.ALL)
     private Set<Stock> stocks;
 
+    public Location(String name, Address address, Set<Stock> stocks) {
+        this.name = name;
+        this.address = address;
+        setStocks(stocks);
+    }
+
     public void setStocks(Set<Stock> stocks) {
         this.stocks = stocks;
         stocks.forEach(stock -> stock.setLocation(this));

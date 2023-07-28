@@ -38,11 +38,11 @@ public class IntegrationTestDBService {
     }
 
     private void setUp() {
-        customerRepository.save(DummyData.customer);
-        supplierRepository.save(DummyData.supplier);
-        productCategoryRepository.save(DummyData.category);
+        customerRepository.saveAll(DummyData.customers);
+        supplierRepository.saveAll(DummyData.suppliers);
+        productCategoryRepository.saveAll(DummyData.productCategories);
         productRepository.saveAll(DummyData.products);
-        locationRepository.save(DummyData.locationWithStock20);
+        locationRepository.saveAll(DummyData.locations);
     }
 
 }

@@ -1,169 +1,193 @@
 package ro.msg.learning.shop.service.locationselection;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ro.msg.learning.shop.DummyData;
 import ro.msg.learning.shop.exception.LocationSelectionException;
-import ro.msg.learning.shop.model.Stock;
+import ro.msg.learning.shop.model.Address;
+import ro.msg.learning.shop.model.Location;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static ro.msg.learning.shop.DummyData.coloredPencils;
+import static ro.msg.learning.shop.DummyData.createStocks;
+import static ro.msg.learning.shop.DummyData.theJungleBook;
 
 class MostAbundantLocationSelectionAlgorithmTest {
     private final MostAbundantLocationSelectionAlgorithm algorithm = new MostAbundantLocationSelectionAlgorithm();
 
+    private Location clujWarehouse;
+    private Location bucurestiWarehouse;
+
+    @BeforeEach
+    public void setUp() {
+        bucurestiWarehouse = new Location(
+                "Bucuresti Warehouse",
+                new Address("Romania", "Bucuresti", "Bucuresti", "str. Fabricii 2"),
+                emptySet()
+        );
+        clujWarehouse = new Location(
+                "Cluj-Napoca Warehouse",
+                new Address("Romania", "Cluj-Napoca", "Cluj", "str. Fabricii 2"),
+                emptySet()
+        );
+    }
+
     @Test
     void testSelectLocationForItems_singleProductSingleSolution_selectSolution() {
-        final var location1 = DummyData.createLocation(1, 20, DummyData.products);
+        clujWarehouse.setStocks(createStocks(20, theJungleBook));
 
         final var items = List.of(
                 OrderDetailWithPotentialLocations.builder()
-                        .product(DummyData.product1)
+                        .product(theJungleBook)
                         .quantity(1)
                         .potentialLocations(Set.of(
-                                location1
+                                clujWarehouse
                         ))
                         .build()
         );
         var result = algorithm.selectLocationForItems(items);
         assertThat(result)
                 .singleElement()
-                .hasFieldOrPropertyWithValue("product", DummyData.product1)
+                .hasFieldOrPropertyWithValue("product", theJungleBook)
                 .extracting("shippedFrom")
-                .isEqualTo(location1);
+                .isEqualTo(clujWarehouse);
     }
 
     @Test
     void testSelectLocationForItems_singleProductMultipleSolutions_selectSolutionWithTheLargestQuantity() {
-        final var location1 = DummyData.createLocation(1, 20, DummyData.products);
-        final var location2 = DummyData.createLocation(2, 40, DummyData.products);
+        bucurestiWarehouse.setStocks(createStocks(20, theJungleBook));
+        clujWarehouse.setStocks(createStocks(40, theJungleBook));
+
 
         final var items = List.of(
                 OrderDetailWithPotentialLocations.builder()
-                        .product(DummyData.product1)
+                        .product(theJungleBook)
                         .quantity(1)
                         .potentialLocations(Set.of(
-                                location1,
-                                location2
+                                bucurestiWarehouse,
+                                clujWarehouse
                         ))
                         .build()
         );
         var result = algorithm.selectLocationForItems(items);
         assertThat(result)
                 .singleElement()
-                .hasFieldOrPropertyWithValue("product", DummyData.product1)
+                .hasFieldOrPropertyWithValue("product", theJungleBook)
                 .extracting("shippedFrom")
-                .isEqualTo(location2);
+                .isEqualTo(clujWarehouse);
     }
 
     @Test
     void testSelectLocationForItems_multipleProductsSameSolution_selectSolution() {
-        final var location1 = DummyData.createLocation(1, 20, DummyData.products);
-        final var location2 = DummyData.createLocation(2, 10, List.of(DummyData.product1));
+        bucurestiWarehouse.setStocks(createStocks(20, theJungleBook, coloredPencils));
+        clujWarehouse.setStocks(createStocks(10, theJungleBook));
 
         final var items = List.of(
                 OrderDetailWithPotentialLocations.builder()
-                        .product(DummyData.product1)
+                        .product(theJungleBook)
                         .quantity(1)
                         .potentialLocations(Set.of(
-                                location1,
-                                location2
+                                bucurestiWarehouse,
+                                clujWarehouse
                         ))
                         .build(),
                 OrderDetailWithPotentialLocations.builder()
-                        .product(DummyData.product2)
+                        .product(coloredPencils)
                         .quantity(1)
                         .potentialLocations(Set.of(
-                                location1
+                                bucurestiWarehouse
                         ))
                         .build()
         );
         var result = algorithm.selectLocationForItems(items);
         assertThat(result)
                 .hasSize(2)
-                .allMatch(orderDetail -> orderDetail.getShippedFrom().equals(location1));
+                .allMatch(orderDetail -> bucurestiWarehouse.equals(orderDetail.getShippedFrom()));
     }
 
     @Test
     void testSelectLocationForItems_multipleProductsIndependentSolutions_selectSolutionsIndependently() {
-        final var location1 = DummyData.createLocation(1, 20, List.of(DummyData.product1));
-        final var location2 = DummyData.createLocation(2, 20, List.of(DummyData.product2));
+        bucurestiWarehouse.setStocks(createStocks(20, coloredPencils));
+        clujWarehouse.setStocks(createStocks(20, theJungleBook));
 
         final var items = List.of(
                 OrderDetailWithPotentialLocations.builder()
-                        .product(DummyData.product1)
+                        .product(theJungleBook)
                         .quantity(1)
                         .potentialLocations(Set.of(
-                                location1
+                                clujWarehouse
                         ))
                         .build(),
                 OrderDetailWithPotentialLocations.builder()
-                        .product(DummyData.product2)
+                        .product(coloredPencils)
                         .quantity(1)
                         .potentialLocations(Set.of(
-                                location2
+                                bucurestiWarehouse
                         ))
                         .build()
         );
         var result = algorithm.selectLocationForItems(items);
         assertThat(result)
                 .hasSize(2)
-                .filteredOn(orderDetail -> orderDetail.getProduct().equals(DummyData.product1))
+                .filteredOn(orderDetail -> orderDetail.getProduct().equals(theJungleBook))
                 .singleElement()
                 .extracting("shippedFrom")
-                .isEqualTo(location1);
+                .isEqualTo(clujWarehouse);
 
         assertThat(result)
-                .filteredOn(orderDetail -> orderDetail.getProduct().equals(DummyData.product2))
+                .filteredOn(orderDetail -> orderDetail.getProduct().equals(coloredPencils))
                 .singleElement()
                 .extracting("shippedFrom")
-                .isEqualTo(location2);
+                .isEqualTo(bucurestiWarehouse);
     }
 
     @Test
     void testSelectLocationForItems_multipleProductsMultipleSolution_selectSolutionWithTheLargestQuantityForEachProduct() {
-        final var location1 = DummyData.createLocation(1, List.of(
-                new Stock(DummyData.product1, 20),
-                new Stock(DummyData.product2, 10)
-        ));
-        final var location2 = DummyData.createLocation(2, List.of(
-                new Stock(DummyData.product1, 10),
-                new Stock(DummyData.product2, 20)
-        ));
+        bucurestiWarehouse.setStocks(createStocks(Map.of(
+                theJungleBook, 20,
+                coloredPencils, 10
+        )));
+        clujWarehouse.setStocks(createStocks(Map.of(
+                theJungleBook, 10,
+                coloredPencils, 20
+        )));
 
         final var items = List.of(
                 OrderDetailWithPotentialLocations.builder()
-                        .product(DummyData.product1)
+                        .product(theJungleBook)
                         .quantity(1)
                         .potentialLocations(Set.of(
-                                location1,
-                                location2
+                                bucurestiWarehouse,
+                                clujWarehouse
                         ))
                         .build(),
                 OrderDetailWithPotentialLocations.builder()
-                        .product(DummyData.product2)
+                        .product(coloredPencils)
                         .quantity(1)
                         .potentialLocations(Set.of(
-                                location1,
-                                location2
+                                bucurestiWarehouse,
+                                clujWarehouse
                         ))
                         .build()
         );
         var result = algorithm.selectLocationForItems(items);
         assertThat(result)
                 .hasSize(2)
-                .filteredOn(orderDetail -> orderDetail.getProduct().equals(DummyData.product1))
+                .filteredOn(orderDetail -> orderDetail.getProduct().equals(theJungleBook))
                 .singleElement()
                 .extracting("shippedFrom")
-                .isEqualTo(location1);
+                .isEqualTo(bucurestiWarehouse);
 
         assertThat(result)
-                .filteredOn(orderDetail -> orderDetail.getProduct().equals(DummyData.product2))
+                .filteredOn(orderDetail -> orderDetail.getProduct().equals(coloredPencils))
                 .singleElement()
                 .extracting("shippedFrom")
-                .isEqualTo(location2);
+                .isEqualTo(clujWarehouse);
     }
 
 
@@ -171,7 +195,7 @@ class MostAbundantLocationSelectionAlgorithmTest {
     void testSelectLocationForItems_singleProductNoSolution_fail() {
         final var items = List.of(
                 OrderDetailWithPotentialLocations.builder()
-                        .product(DummyData.product1)
+                        .product(theJungleBook)
                         .quantity(1)
                         .potentialLocations(Set.of(
                         ))
@@ -183,22 +207,22 @@ class MostAbundantLocationSelectionAlgorithmTest {
 
     @Test
     void testSelectLocationForItems_multipleProductsNoSolution_fail() {
-        final var location1 = DummyData.createLocation(1, 20, List.of(DummyData.product1));
-        final var location2 = DummyData.createLocation(2, 20, List.of(DummyData.product2));
+        bucurestiWarehouse.setStocks(createStocks(20, coloredPencils));
+        clujWarehouse.setStocks(createStocks(20, theJungleBook));
 
         final var items = List.of(
                 OrderDetailWithPotentialLocations.builder()
-                        .product(DummyData.product1)
+                        .product(theJungleBook)
                         .quantity(100)
                         .potentialLocations(Set.of(
-                                location1
+                                clujWarehouse
                         ))
                         .build(),
                 OrderDetailWithPotentialLocations.builder()
-                        .product(DummyData.product2)
+                        .product(coloredPencils)
                         .quantity(100)
                         .potentialLocations(Set.of(
-                                location2
+                                bucurestiWarehouse
                         ))
                         .build()
         );

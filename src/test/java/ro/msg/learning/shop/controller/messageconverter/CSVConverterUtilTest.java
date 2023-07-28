@@ -13,25 +13,24 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class CSVConverterUtilTest {
 
-    private final Person person1 = new Person("John Smith", 21, "johnsmith@gmail.com");
-    private final Person person2 = new Person("Maria Martin", 25, "mariamartin@gmail.com");
-
-    private final List<Person> persons = List.of(person1, person2);
-    private final String CSV_PERSON1 = """
+    private final Person john = new Person("John Smith", 21, "johnsmith@gmail.com");
+    private final Person maria = new Person("Maria Martin", 25, "mariamartin@gmail.com");
+    private final List<Person> persons = List.of(john, maria);
+    private final String CSV_JOHN = """
             age,email,name
             21,johnsmith@gmail.com,"John Smith"
             """;
-    private final String CSV_PERSON2 = """
+    private final String CSV_MARIA = """
             age,email,name
             25,mariamartin@gmail.com,"Maria Martin"
             """;
 
-    private final String CSV_PERSONS = CSV_PERSON1 + CSV_PERSON2.substring(CSV_PERSON2.indexOf('\n') + 1);
+    private final String CSV_PERSONS = CSV_JOHN + CSV_MARIA.substring(CSV_MARIA.indexOf('\n') + 1);
 
     @Test
     void testFromCsv_one() {
-        List<Person> results = CSVConverterUtil.fromCsv(Person.class, new ByteArrayInputStream(CSV_PERSON1.getBytes()));
-        assertThat(results).singleElement().isEqualTo(person1);
+        List<Person> results = CSVConverterUtil.fromCsv(Person.class, new ByteArrayInputStream(CSV_JOHN.getBytes()));
+        assertThat(results).singleElement().isEqualTo(john);
     }
 
     @Test
@@ -43,7 +42,7 @@ class CSVConverterUtilTest {
     @Test
     @SneakyThrows
     void testToCsv_one() {
-        testListToCsv(Collections.singletonList(person1), CSV_PERSON1);
+        testListToCsv(Collections.singletonList(john), CSV_JOHN);
     }
 
     @Test

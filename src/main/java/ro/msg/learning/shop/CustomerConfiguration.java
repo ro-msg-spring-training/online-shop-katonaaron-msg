@@ -16,6 +16,6 @@ public class CustomerConfiguration {
     @Bean
     public Customer customer(CustomerRepository customerRepository) {
         return customerRepository.findAll().stream().findFirst()
-                .orElseGet(() -> customerRepository.save(DummyData.customer));
+                .orElseGet(() -> customerRepository.save(DummyData.johnSmith));
     }
 }
