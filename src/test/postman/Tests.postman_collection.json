@@ -8,35 +8,433 @@
   "item": [
     {
       "name": "Create Order Successfully",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "const username = pm.collectionVariables.get(\"username\");\r",
+              "const password = pm.collectionVariables.get(\"password\");\r",
+              "const auth = \"Basic \" + btoa(username + \":\" + password);\r",
+              "const header = {\r",
+              "        'content-type': 'application/json',\r",
+              "        'authorization': auth\r",
+              "    };\r",
+              "\r",
+              "pm.sendRequest({\r",
+              "    url: 'localhost:8080/db/clearAndPopulate',\r",
+              "    method: 'POST',\r",
+              "    header: header\r",
+              "}, (error, response) => {\r",
+              "  if (error) {\r",
+              "    console.log(error);\r",
+              "  } else {\r",
+              "   \r",
+              "    pm.sendRequest({\r",
+              "        url: 'localhost:8080/products/',\r",
+              "        method: 'GET',\r",
+              "        header: {\r",
+              "            'content-type': 'application/json',\r",
+              "            'authorization': auth\r",
+              "        }\r",
+              "    }, (error, response) => {\r",
+              "        if (error) {\r",
+              "            console.log(error);\r",
+              "        } else {\r",
+              "            products = response.json();\r",
+              "            pm.collectionVariables.set(\"product1\", products[0].id);\r",
+              "            pm.collectionVariables.set(\"product2\", products[1].id);\r",
+              "        }\r",
+              "    });\r",
+              "  }\r",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "\r",
+              "pm.test(\"Response status code is 201\", function () {\r",
+              "    pm.response.to.have.status(201);\r",
+              "});\r",
+              "\r",
+              "\r",
+              "pm.test(\"The id field should not be empty\", function () {\r",
+              "    const responseData = pm.response.json();\r",
+              "\r",
+              "    pm.expect(responseData.id).to.exist.and.to.not.be.empty;\r",
+              "});\r",
+              "\r",
+              "\r",
+              "pm.test(\"Validate the customer object\", function () {\r",
+              "    const responseData = pm.response.json();\r",
+              "\r",
+              "    pm.expect(responseData).to.be.an('object');\r",
+              "    pm.expect(responseData.customer).to.exist.and.to.be.an('object');\r",
+              "    pm.expect(responseData.customer.firstName).to.exist.and.to.be.a('string');\r",
+              "    pm.expect(responseData.customer.lastName).to.exist.and.to.be.a('string');\r",
+              "    pm.expect(responseData.customer.emailAddress).to.exist.and.to.be.a('string');\r",
+              "});\r",
+              "\r",
+              "\r",
+              "pm.test(\"The createdAt field should not be empty\", function () {\r",
+              "    const responseData = pm.response.json();\r",
+              "\r",
+              "    pm.expect(responseData.createdAt).to.exist.and.to.not.be.empty;\r",
+              "});\r",
+              "\r",
+              "\r",
+              "pm.test(\"Delivery address object is valid\", function () {\r",
+              "    const responseData = pm.response.json();\r",
+              "\r",
+              "    pm.expect(responseData.deliveryAddress).to.exist.and.to.be.an('object');\r",
+              "    pm.expect(responseData.deliveryAddress.country).to.exist.and.to.be.a('string');\r",
+              "    pm.expect(responseData.deliveryAddress.city).to.exist.and.to.be.a('string');\r",
+              "    pm.expect(responseData.deliveryAddress.county).to.exist.and.to.be.a('string');\r",
+              "    pm.expect(responseData.deliveryAddress.streetAddress).to.exist.and.to.be.a('string');\r",
+              "});\r",
+              "\r",
+              "pm.test(\"orderDetails contains the two products in the required quantities\", function() {\r",
+              "    const responseData = pm.response.json();\r",
+              "\r",
+              "    pm.expect(responseData.orderDetails).to.exist\r",
+              "\r",
+              "    const prod1_key = pm.collectionVariables.get(\"product1\");\r",
+              "    const od1 = responseData.orderDetails.find(od => od.product.id === prod1_key)\r",
+              "    pm.expect(od1).to.exist\r",
+              "    pm.expect(od1.quantity).to.be.equal(1)\r",
+              "\r",
+              "    const prod2_key = pm.collectionVariables.get(\"product2\");\r",
+              "    const od2 = responseData.orderDetails.find(od => od.product.id === prod2_key)\r",
+              "    pm.expect(od2).to.exist\r",
+              "    pm.expect(od2.quantity).to.be.equal(2)\r",
+              "});\r",
+              "\r",
+              ""
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
       "request": {
-        "method": "GET",
-        "header": []
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"deliveryAddress\": {\r\n        \"country\": \"Romania\",\r\n        \"city\": \"Cluj-Napoca\",\r\n        \"county\": \"Cluj\",\r\n        \"streetAddress\": \"Str. Unirii 23\"\r\n    },\r\n    \"orderDetails\": [\r\n        {\r\n            \"productId\": \"{{product1}}\",\r\n            \"quantity\": 1\r\n        },\r\n        {\r\n            \"productId\": \"{{product2}}\",\r\n            \"quantity\": 2\r\n        }\r\n    ]\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:8080/orders/",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "orders",
+            ""
+          ]
+        }
       },
       "response": []
     },
     {
       "name": "Create Order Missing Stock",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "const username = pm.collectionVariables.get(\"username\");\r",
+              "const password = pm.collectionVariables.get(\"password\");\r",
+              "const auth = \"Basic \" + btoa(username + \":\" + password);\r",
+              "const header = {\r",
+              "        'content-type': 'application/json',\r",
+              "        'authorization': auth\r",
+              "    };\r",
+              "\r",
+              "pm.sendRequest({\r",
+              "    url: 'localhost:8080/db/clearAndPopulate',\r",
+              "    method: 'POST',\r",
+              "    header: header\r",
+              "}, (error, response) => {\r",
+              "  if (error) {\r",
+              "    console.log(error);\r",
+              "  } else {\r",
+              "    pm.sendRequest({\r",
+              "        url: 'localhost:8080/products/',\r",
+              "        method: 'GET',\r",
+              "        header: header\r",
+              "    }, (error, response) => {\r",
+              "        if (error) {\r",
+              "            console.log(error);\r",
+              "        } else {\r",
+              "            products = response.json();\r",
+              "            pm.collectionVariables.set(\"product1\", products[0].id);\r",
+              "            pm.collectionVariables.set(\"product2\", products[1].id);\r",
+              "        }\r",
+              "    });\r",
+              "  }\r",
+              "});\r",
+              "\r",
+              ""
+            ],
+            "type": "text/javascript"
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Response status code is 409\", function () {\r",
+              "    pm.response.to.have.status(409);\r",
+              "});\r",
+              "\r",
+              "\r",
+              "pm.test(\"Response message format\", function () {\r",
+              "    const re = /No potential location has the product \\\"[a-z0-9-]+\\\" in stock in the quantity [0-9]+/;\r",
+              "    const response = pm.response.text();\r",
+              "\r",
+              "    pm.expect(re.test(response)).to.be.true\r",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
       "request": {
-        "method": "GET",
-        "header": []
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"deliveryAddress\": {\r\n        \"country\": \"Romania\",\r\n        \"city\": \"Cluj-Napoca\",\r\n        \"county\": \"Cluj\",\r\n        \"streetAddress\": \"Str. Unirii 23\"\r\n    },\r\n    \"orderDetails\": [\r\n        {\r\n            \"productId\": \"{{product1}}\",\r\n            \"quantity\": 100\r\n        },\r\n        {\r\n            \"productId\": \"{{product2}}\",\r\n            \"quantity\": 200\r\n        }\r\n    ]\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:8080/orders/",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "orders",
+            ""
+          ]
+        }
       },
       "response": []
     },
     {
       "name": "Create Order Unknown ProductID",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "const username = pm.collectionVariables.get(\"username\");\r",
+              "const password = pm.collectionVariables.get(\"password\");\r",
+              "const auth = \"Basic \" + btoa(username + \":\" + password);\r",
+              "const header = {\r",
+              "        'content-type': 'application/json',\r",
+              "        'authorization': auth\r",
+              "    };\r",
+              "\r",
+              "pm.sendRequest({\r",
+              "    url: 'localhost:8080/db/clearAndPopulate',\r",
+              "    method: 'POST',\r",
+              "    header: header\r",
+              "}, (error, response) => {\r",
+              "  if (error) {\r",
+              "    console.log(error);\r",
+              "  } else {\r",
+              "  }\r",
+              "});\r",
+              "\r",
+              ""
+            ],
+            "type": "text/javascript"
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Response status code is 404\", function () {\r",
+              "    pm.response.to.have.status(404);\r",
+              "});\r",
+              "\r",
+              "\r",
+              "pm.test(\"Response message format\", function () {\r",
+              "    const re = /Product with id \\\"[a-z0-9-]+\\\" was not found/;\r",
+              "    const response = pm.response.text();\r",
+              "\r",
+              "    pm.expect(re.test(response)).to.be.true\r",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
       "request": {
-        "method": "GET",
-        "header": []
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"deliveryAddress\": {\r\n        \"country\": \"Romania\",\r\n        \"city\": \"Cluj-Napoca\",\r\n        \"county\": \"Cluj\",\r\n        \"streetAddress\": \"Str. Unirii 23\"\r\n    },\r\n    \"orderDetails\": [\r\n        {\r\n            \"productId\": \"2cdb9152-2bbc-11ee-be56-0242ac120002\",\r\n            \"quantity\": 100\r\n        }\r\n    ]\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:8080/orders/",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "orders",
+            ""
+          ]
+        }
       },
       "response": []
     },
     {
       "name": "Export stocks",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "const username = pm.collectionVariables.get(\"username\");\r",
+              "const password = pm.collectionVariables.get(\"password\");\r",
+              "const auth = \"Basic \" + btoa(username + \":\" + password);\r",
+              "const header = {\r",
+              "        'content-type': 'application/json',\r",
+              "        'authorization': auth\r",
+              "    };\r",
+              "\r",
+              "pm.sendRequest({\r",
+              "    url: 'localhost:8080/db/clearAndPopulate',\r",
+              "    method: 'POST',\r",
+              "    header: header\r",
+              "}, (error, response) => {\r",
+              "  if (error) {\r",
+              "    console.log(error);\r",
+              "  } else {\r",
+              "  }\r",
+              "});\r",
+              "\r",
+              ""
+            ],
+            "type": "text/javascript"
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const locationId = 'a36d5e38-2bb5-11ee-be56-0242ac120002';\r",
+              "\r",
+              "pm.test(\"Response status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"The response should start with a header row\", function () {\r",
+              "    const response = pm.response.text();\r",
+              "    pm.expect(response.split('\\n')[0]).to.eql(\"locationId,locationName,productId,productName,quantity\");\r",
+              "});\r",
+              "\r",
+              "\r",
+              "\r",
+              "pm.test(\"The rows should contain the id of the location\", function () {\r",
+              "    const response = pm.response.text();\r",
+              "    const lines = response.split('\\n');\r",
+              "\r",
+              "    for(let i = 1; i < lines.length; i++) {\r",
+              "        const line = lines[i];\r",
+              "\r",
+              "        const terms = line.split(',');\r",
+              "        if(terms.length == 1) {\r",
+              "            pm.expect(i).to.eql(lines.length - 1, \"Empty line can be only at the end of the file\");\r",
+              "            continue;\r",
+              "        }\r",
+              "        pm.expect(terms[0]).to.eql('\"' + (locationId) + '\"');\r",
+              "    }\r",
+              "});\r",
+              "\r",
+              "\r",
+              ""
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
       "request": {
         "method": "GET",
-        "header": []
+        "header": [],
+        "url": {
+          "raw": "localhost:8080/locations/a36d5e38-2bb5-11ee-be56-0242ac120002/exportStock",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "locations",
+            "a36d5e38-2bb5-11ee-be56-0242ac120002",
+            "exportStock"
+          ]
+        }
       },
       "response": []
+    }
+  ],
+  "auth": {
+    "type": "basic",
+    "basic": [
+      {
+        "key": "password",
+        "value": "{{password}}",
+        "type": "string"
+      },
+      {
+        "key": "username",
+        "value": "{{username}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
     }
   ],
   "variable": [
@@ -47,6 +445,15 @@
     {
       "key": "product2",
       "value": ""
+    },
+    {
+      "key": "password",
+      "value": "P4ssw0rd*90!"
+    },
+    {
+      "key": "username",
+      "value": "johnsmith",
+      "type": "string"
     }
   ]
 }
