@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 import static java.util.Collections.emptySet;
 
 public final class DummyData {
+    public static final Address addressMSGBrassai = new Address("Romania", "Cluj-Napoca", "Cluj", "Str. Brassai 9");
     public static final AddressDTO addressDTOMSGBrassai = new AddressDTO("Romania", "Cluj-Napoca", "Cluj", "Str. Brassai 9");
     public static final Product theJungleBook;
     public static final Product coloredPencils;
