@@ -13,6 +13,7 @@ import java.util.UUID;
 import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static ro.msg.learning.shop.DummyData.addressMSGBrassai;
 import static ro.msg.learning.shop.DummyData.coloredPencils;
 import static ro.msg.learning.shop.DummyData.createStocks;
 import static ro.msg.learning.shop.DummyData.theJungleBook;
@@ -52,7 +53,7 @@ class SingleLocationSelectionAlgorithmTest {
                         ))
                         .build()
         );
-        var result = algorithm.selectLocationForItems(items);
+        var result = algorithm.selectLocationForItems(addressMSGBrassai, items);
         assertThat(result)
                 .singleElement()
                 .hasFieldOrPropertyWithValue("product", theJungleBook)
@@ -77,7 +78,7 @@ class SingleLocationSelectionAlgorithmTest {
                         ))
                         .build()
         );
-        var result = algorithm.selectLocationForItems(items);
+        var result = algorithm.selectLocationForItems(addressMSGBrassai, items);
         assertThat(result)
                 .singleElement()
                 .hasFieldOrPropertyWithValue("product", theJungleBook)
@@ -107,7 +108,7 @@ class SingleLocationSelectionAlgorithmTest {
                         ))
                         .build()
         );
-        var result = algorithm.selectLocationForItems(items);
+        var result = algorithm.selectLocationForItems(addressMSGBrassai, items);
         assertThat(result)
                 .hasSize(2)
                 .allMatch(orderDetail -> clujWarehouse.equals(orderDetail.getShippedFrom()));
@@ -138,7 +139,7 @@ class SingleLocationSelectionAlgorithmTest {
                         ))
                         .build()
         );
-        var result = algorithm.selectLocationForItems(items);
+        var result = algorithm.selectLocationForItems(addressMSGBrassai, items);
         assertThat(result)
                 .hasSize(2)
                 .allMatch(orderDetail -> orderDetail.getShippedFrom().equals(bucurestiWarehouse));
@@ -154,7 +155,7 @@ class SingleLocationSelectionAlgorithmTest {
                         ))
                         .build()
         );
-        assertThatThrownBy(() -> algorithm.selectLocationForItems(items))
+        assertThatThrownBy(() -> algorithm.selectLocationForItems(addressMSGBrassai, items))
                 .isInstanceOf(LocationSelectionException.class);
     }
 
@@ -179,7 +180,7 @@ class SingleLocationSelectionAlgorithmTest {
                         ))
                         .build()
         );
-        assertThatThrownBy(() -> algorithm.selectLocationForItems(items))
+        assertThatThrownBy(() -> algorithm.selectLocationForItems(addressMSGBrassai, items))
                 .isInstanceOf(LocationSelectionException.class);
     }
 

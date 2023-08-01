@@ -58,7 +58,7 @@ public class OrderService {
                 })
                 .toList();
 
-        final var orderDetails = locationSelectionAlgorithm.selectLocationForItems(items);
+        final var orderDetails = locationSelectionAlgorithm.selectLocationForItems(deliveryAddress, items);
 
         orderDetails.forEach(orderItem -> {
             removeProductFromStock(orderItem.getShippedFrom(), orderItem.getProduct(), orderItem.getQuantity());

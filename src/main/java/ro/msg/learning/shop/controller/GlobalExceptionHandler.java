@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ro.msg.learning.shop.exception.OnlineShopException;
+import ro.msg.learning.shop.exception.OnlineShopInternalException;
 import ro.msg.learning.shop.exception.ResourceNotFoundException;
 
 @RestControllerAdvice
@@ -26,5 +27,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleException(Exception e) {
         log.error("An exception occurred", e);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred");
+    }
+
+    @ExceptionHandler(value = OnlineShopInternalException.class)
+    public ResponseEntity<String> handleOnlineShopInternalException(OnlineShopInternalException e) {
+        return handleException(e);
     }
 }

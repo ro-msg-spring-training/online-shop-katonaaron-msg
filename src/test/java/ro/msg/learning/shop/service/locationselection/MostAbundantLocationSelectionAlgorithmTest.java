@@ -13,6 +13,7 @@ import java.util.Set;
 import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static ro.msg.learning.shop.DummyData.addressMSGBrassai;
 import static ro.msg.learning.shop.DummyData.coloredPencils;
 import static ro.msg.learning.shop.DummyData.createStocks;
 import static ro.msg.learning.shop.DummyData.theJungleBook;
@@ -50,7 +51,7 @@ class MostAbundantLocationSelectionAlgorithmTest {
                         ))
                         .build()
         );
-        var result = algorithm.selectLocationForItems(items);
+        var result = algorithm.selectLocationForItems(addressMSGBrassai, items);
         assertThat(result)
                 .singleElement()
                 .hasFieldOrPropertyWithValue("product", theJungleBook)
@@ -74,7 +75,7 @@ class MostAbundantLocationSelectionAlgorithmTest {
                         ))
                         .build()
         );
-        var result = algorithm.selectLocationForItems(items);
+        var result = algorithm.selectLocationForItems(addressMSGBrassai, items);
         assertThat(result)
                 .singleElement()
                 .hasFieldOrPropertyWithValue("product", theJungleBook)
@@ -104,7 +105,7 @@ class MostAbundantLocationSelectionAlgorithmTest {
                         ))
                         .build()
         );
-        var result = algorithm.selectLocationForItems(items);
+        var result = algorithm.selectLocationForItems(addressMSGBrassai, items);
         assertThat(result)
                 .hasSize(2)
                 .allMatch(orderDetail -> bucurestiWarehouse.equals(orderDetail.getShippedFrom()));
@@ -131,7 +132,7 @@ class MostAbundantLocationSelectionAlgorithmTest {
                         ))
                         .build()
         );
-        var result = algorithm.selectLocationForItems(items);
+        var result = algorithm.selectLocationForItems(addressMSGBrassai, items);
         assertThat(result)
                 .hasSize(2)
                 .filteredOn(orderDetail -> orderDetail.getProduct().equals(theJungleBook))
@@ -175,7 +176,7 @@ class MostAbundantLocationSelectionAlgorithmTest {
                         ))
                         .build()
         );
-        var result = algorithm.selectLocationForItems(items);
+        var result = algorithm.selectLocationForItems(addressMSGBrassai, items);
         assertThat(result)
                 .hasSize(2)
                 .filteredOn(orderDetail -> orderDetail.getProduct().equals(theJungleBook))
@@ -201,7 +202,7 @@ class MostAbundantLocationSelectionAlgorithmTest {
                         ))
                         .build()
         );
-        assertThatThrownBy(() -> algorithm.selectLocationForItems(items))
+        assertThatThrownBy(() -> algorithm.selectLocationForItems(addressMSGBrassai, items))
                 .isInstanceOf(LocationSelectionException.class);
     }
 
@@ -226,7 +227,7 @@ class MostAbundantLocationSelectionAlgorithmTest {
                         ))
                         .build()
         );
-        assertThatThrownBy(() -> algorithm.selectLocationForItems(items))
+        assertThatThrownBy(() -> algorithm.selectLocationForItems(addressMSGBrassai, items))
                 .isInstanceOf(LocationSelectionException.class);
     }
 
