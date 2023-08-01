@@ -23,4 +23,12 @@ public class Customer extends EntityWithId {
         this.password = password;
         this.emailAddress = emailAddress;
     }
+
+    public Customer(Customer customer) {
+        this(customer.getFirstName(),
+                customer.getLastName(),
+                customer.getUsername(),
+                customer.getPassword(),
+                customer.getEmailAddress());
+    }
 }

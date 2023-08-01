@@ -31,13 +31,13 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final LocationRepository locationRepository;
     private final ProductRepository productRepository;
-    private final Customer customer; // Dummy customer until Spring Security is integrated
     private final LocationSelectionAlgorithm locationSelectionAlgorithm;
 
     @Transactional
     public Order createOrder(LocalDateTime timestamp,
                              Address deliveryAddress,
-                             Map<UUID, Integer> productIdToQuantity) {
+                             Map<UUID, Integer> productIdToQuantity,
+                             Customer customer) {
         final var idToProduct = productRepository.findAllById(productIdToQuantity.keySet())
                 .stream()
                 .collect(Collectors.toMap(Product::getId, a -> a));

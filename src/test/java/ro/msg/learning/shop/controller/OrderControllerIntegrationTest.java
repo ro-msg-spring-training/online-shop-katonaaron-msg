@@ -2,8 +2,10 @@ package ro.msg.learning.shop.controller;
 
 import lombok.SneakyThrows;
 import org.assertj.core.groups.Tuple;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -13,7 +15,9 @@ import ro.msg.learning.shop.dto.CreateOrderDTO;
 import ro.msg.learning.shop.dto.CreateOrderDetailDTO;
 import ro.msg.learning.shop.dto.OrderDTO;
 import ro.msg.learning.shop.dto.OrderDetailDTO;
+import ro.msg.learning.shop.model.Customer;
 
+import java.util.Base64;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -21,18 +25,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static ro.msg.learning.shop.DummyData.coloredPencils;
+import static ro.msg.learning.shop.DummyData.johnSmith;
 import static ro.msg.learning.shop.DummyData.theJungleBook;
 
 public class OrderControllerIntegrationTest extends IntegrationTest {
+    @NotNull
+    private static String getAuthorizationHeader(Customer customer) {
+        return "Basic " + Base64.getEncoder().encodeToString((customer.getUsername() + ":" + customer.getPassword()).getBytes());
+    }
 
     @Before
     @SneakyThrows
     public void setUp() {
         mvc.perform(MockMvcRequestBuilders
-                        .post("/db/clear"))
-                .andReturn();
-        mvc.perform(MockMvcRequestBuilders
-                        .post("/db/populate"))
+                        .post("/db/clearAndPopulate")
+                        .header(HttpHeaders.AUTHORIZATION, getAuthorizationHeader(johnSmith)))
                 .andReturn();
     }
 
@@ -62,6 +69,7 @@ public class OrderControllerIntegrationTest extends IntegrationTest {
 
         final var result = mvc.perform(MockMvcRequestBuilders
                         .post("/orders/")
+                        .header(HttpHeaders.AUTHORIZATION, getAuthorizationHeader(johnSmith))
                         .content(asJsonString(dto))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -82,6 +90,7 @@ public class OrderControllerIntegrationTest extends IntegrationTest {
 
         final var result = mvc.perform(MockMvcRequestBuilders
                         .post("/orders/")
+                        .header(HttpHeaders.AUTHORIZATION, getAuthorizationHeader(johnSmith))
                         .content(asJsonString(dto))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))

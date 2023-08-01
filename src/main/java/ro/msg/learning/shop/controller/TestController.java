@@ -14,13 +14,8 @@ import ro.msg.learning.shop.service.IntegrationTestDBService;
 public class TestController {
     private final IntegrationTestDBService service;
 
-    @PostMapping("/clear")
-    public void clearDB() {
-        service.clearDB();
-    }
-
-    @PostMapping("/populate")
-    public void populateDB() {
-        service.populateDB();
+    @PostMapping("/clearAndPopulate")
+    public void clearAndPopulateDB() {
+        service.clearAndPopulateDB();
     }
 }

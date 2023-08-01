@@ -4,8 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.flywaydb.core.Flyway;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ro.msg.learning.shop.DummyData;
-import ro.msg.learning.shop.repository.CustomerRepository;
+import ro.msg.learning.shop.model.Customer;
 import ro.msg.learning.shop.repository.LocationRepository;
 import ro.msg.learning.shop.repository.ProductCategoryRepository;
 import ro.msg.learning.shop.repository.ProductRepository;
@@ -25,20 +26,19 @@ public class IntegrationTestDBService {
 
     private final ProductCategoryRepository productCategoryRepository;
 
-    private final CustomerRepository customerRepository;
+    private final CustomerService customerService;
 
-
-    public void clearDB() {
+    @Transactional
+    public void clearAndPopulateDB() {
         flyway.clean();
-    }
-
-    public void populateDB() {
         flyway.migrate();
         setUp();
     }
 
     private void setUp() {
-        customerRepository.saveAll(DummyData.customers);
+        DummyData.customers.stream()
+                .map(Customer::new)
+                .forEach(customerService::registerCustomer);
         supplierRepository.saveAll(DummyData.suppliers);
         productCategoryRepository.saveAll(DummyData.productCategories);
         productRepository.saveAll(DummyData.products);
