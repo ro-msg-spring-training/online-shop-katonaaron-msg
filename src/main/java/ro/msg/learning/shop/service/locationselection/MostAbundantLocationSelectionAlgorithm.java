@@ -3,12 +3,10 @@ package ro.msg.learning.shop.service.locationselection;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import ro.msg.learning.shop.exception.LocationSelectionException;
-import ro.msg.learning.shop.model.Address;
 import ro.msg.learning.shop.model.OrderDetail;
 import ro.msg.learning.shop.model.Stock;
 
 import java.util.AbstractMap;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.Optional;
@@ -19,8 +17,8 @@ import java.util.stream.Collectors;
 @ConditionalOnProperty(name = "ro.msg.learning.shop.locationselect.algorithm", havingValue = "MOST_ABUNDANT")
 public class MostAbundantLocationSelectionAlgorithm implements LocationSelectionAlgorithm {
     @Override
-    public Set<OrderDetail> selectLocationForItems(Address deliveryAddress, Collection<OrderDetailWithPotentialLocations> items) {
-        return items.stream()
+    public Set<OrderDetail> selectLocationForItems(OrderWithPotentialLocations order) {
+        return order.getOrderDetails().stream()
                 .map(item -> new OrderDetail(
                         item.product(),
                         item.quantity(),

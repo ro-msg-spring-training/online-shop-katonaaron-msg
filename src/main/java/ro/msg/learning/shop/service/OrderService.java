@@ -16,6 +16,7 @@ import ro.msg.learning.shop.repository.OrderRepository;
 import ro.msg.learning.shop.repository.ProductRepository;
 import ro.msg.learning.shop.service.locationselection.LocationSelectionAlgorithm;
 import ro.msg.learning.shop.service.locationselection.OrderDetailWithPotentialLocations;
+import ro.msg.learning.shop.service.locationselection.OrderWithPotentialLocations;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -56,20 +57,19 @@ public class OrderService {
                             .quantity(entry.getValue())
                             .build();
                 })
-                .toList();
+                .collect(Collectors.toSet());
 
-        final var orderDetails = locationSelectionAlgorithm.selectLocationForItems(deliveryAddress, items);
+        final var orderWithPotentialLocations = new OrderWithPotentialLocations(
+                customer, timestamp, deliveryAddress, items);
+
+        final var orderDetails = locationSelectionAlgorithm.selectLocationForItems(orderWithPotentialLocations);
 
         orderDetails.forEach(orderItem -> {
             removeProductFromStock(orderItem.getShippedFrom(), orderItem.getProduct(), orderItem.getQuantity());
             locationRepository.save(orderItem.getShippedFrom());
         });
 
-        final var order = new Order();
-        order.setCreatedAt(timestamp);
-        order.setOrderDetails(orderDetails);
-        order.setDeliveryAddress(deliveryAddress);
-        order.setCustomer(customer);
+        final var order = orderWithPotentialLocations.toOrder(orderDetails);
 
         return orderRepository.saveAndFlush(order);
     }

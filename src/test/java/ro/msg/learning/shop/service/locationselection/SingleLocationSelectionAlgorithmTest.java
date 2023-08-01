@@ -5,8 +5,9 @@ import org.junit.jupiter.api.Test;
 import ro.msg.learning.shop.exception.LocationSelectionException;
 import ro.msg.learning.shop.model.Address;
 import ro.msg.learning.shop.model.Location;
+import ro.msg.learning.shop.model.OrderDetail;
 
-import java.util.List;
+import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
@@ -16,6 +17,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static ro.msg.learning.shop.DummyData.addressMSGBrassai;
 import static ro.msg.learning.shop.DummyData.coloredPencils;
 import static ro.msg.learning.shop.DummyData.createStocks;
+import static ro.msg.learning.shop.DummyData.johnSmith;
 import static ro.msg.learning.shop.DummyData.theJungleBook;
 
 class SingleLocationSelectionAlgorithmTest {
@@ -44,7 +46,7 @@ class SingleLocationSelectionAlgorithmTest {
     void testSelectLocationForItems_singleProductSingleSolution_selectSolution() {
         clujWarehouse.setStocks(createStocks(20, theJungleBook));
 
-        final var items = List.of(
+        final var items = Set.of(
                 OrderDetailWithPotentialLocations.builder()
                         .product(theJungleBook)
                         .quantity(1)
@@ -53,7 +55,7 @@ class SingleLocationSelectionAlgorithmTest {
                         ))
                         .build()
         );
-        var result = algorithm.selectLocationForItems(addressMSGBrassai, items);
+        final var result = runLocationSelectionAlgorithm(items);
         assertThat(result)
                 .singleElement()
                 .hasFieldOrPropertyWithValue("product", theJungleBook)
@@ -68,7 +70,7 @@ class SingleLocationSelectionAlgorithmTest {
         clujWarehouse.setStocks(createStocks(20, theJungleBook));
         clujWarehouse.setId(UUID.fromString(UUID_HIGHEST));
 
-        final var items = List.of(
+        final var items = Set.of(
                 OrderDetailWithPotentialLocations.builder()
                         .product(theJungleBook)
                         .quantity(1)
@@ -78,7 +80,7 @@ class SingleLocationSelectionAlgorithmTest {
                         ))
                         .build()
         );
-        var result = algorithm.selectLocationForItems(addressMSGBrassai, items);
+        final var result = runLocationSelectionAlgorithm(items);
         assertThat(result)
                 .singleElement()
                 .hasFieldOrPropertyWithValue("product", theJungleBook)
@@ -91,7 +93,7 @@ class SingleLocationSelectionAlgorithmTest {
         clujWarehouse.setStocks(createStocks(20, theJungleBook, coloredPencils));
         bucurestiWarehouse.setStocks(createStocks(20, theJungleBook));
 
-        final var items = List.of(
+        final var items = Set.of(
                 OrderDetailWithPotentialLocations.builder()
                         .product(theJungleBook)
                         .quantity(1)
@@ -108,7 +110,7 @@ class SingleLocationSelectionAlgorithmTest {
                         ))
                         .build()
         );
-        var result = algorithm.selectLocationForItems(addressMSGBrassai, items);
+        final var result = runLocationSelectionAlgorithm(items);
         assertThat(result)
                 .hasSize(2)
                 .allMatch(orderDetail -> clujWarehouse.equals(orderDetail.getShippedFrom()));
@@ -121,7 +123,7 @@ class SingleLocationSelectionAlgorithmTest {
         clujWarehouse.setStocks(createStocks(20, theJungleBook));
         clujWarehouse.setId(UUID.fromString(UUID_HIGHEST));
 
-        final var items = List.of(
+        final var items = Set.of(
                 OrderDetailWithPotentialLocations.builder()
                         .product(theJungleBook)
                         .quantity(1)
@@ -139,7 +141,7 @@ class SingleLocationSelectionAlgorithmTest {
                         ))
                         .build()
         );
-        var result = algorithm.selectLocationForItems(addressMSGBrassai, items);
+        final var result = runLocationSelectionAlgorithm(items);
         assertThat(result)
                 .hasSize(2)
                 .allMatch(orderDetail -> orderDetail.getShippedFrom().equals(bucurestiWarehouse));
@@ -147,7 +149,7 @@ class SingleLocationSelectionAlgorithmTest {
 
     @Test
     void testSelectLocationForItems_singleProductNoSolution_fail() {
-        final var items = List.of(
+        final var items = Set.of(
                 OrderDetailWithPotentialLocations.builder()
                         .product(theJungleBook)
                         .quantity(1)
@@ -155,7 +157,7 @@ class SingleLocationSelectionAlgorithmTest {
                         ))
                         .build()
         );
-        assertThatThrownBy(() -> algorithm.selectLocationForItems(addressMSGBrassai, items))
+        assertThatThrownBy(() -> runLocationSelectionAlgorithm(items))
                 .isInstanceOf(LocationSelectionException.class);
     }
 
@@ -164,7 +166,7 @@ class SingleLocationSelectionAlgorithmTest {
         bucurestiWarehouse.setStocks(createStocks(20, theJungleBook));
         clujWarehouse.setStocks(createStocks(20, coloredPencils));
 
-        final var items = List.of(
+        final var items = Set.of(
                 OrderDetailWithPotentialLocations.builder()
                         .product(theJungleBook)
                         .quantity(1)
@@ -180,8 +182,18 @@ class SingleLocationSelectionAlgorithmTest {
                         ))
                         .build()
         );
-        assertThatThrownBy(() -> algorithm.selectLocationForItems(addressMSGBrassai, items))
+        assertThatThrownBy(() -> runLocationSelectionAlgorithm(items))
                 .isInstanceOf(LocationSelectionException.class);
+    }
+
+    private Set<OrderDetail> runLocationSelectionAlgorithm(Set<OrderDetailWithPotentialLocations> items) {
+        final var order = new OrderWithPotentialLocations(
+                johnSmith,
+                LocalDateTime.now(),
+                addressMSGBrassai,
+                items);
+
+        return algorithm.selectLocationForItems(order);
     }
 
 }

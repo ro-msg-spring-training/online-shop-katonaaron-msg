@@ -12,7 +12,6 @@ import ro.msg.learning.shop.model.Location;
 import ro.msg.learning.shop.model.OrderDetail;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -32,12 +31,12 @@ public class ProximityBasedLocationSelectionAlgorithm implements LocationSelecti
     private String routeMatrixUrl;
 
     @Override
-    public Set<OrderDetail> selectLocationForItems(Address deliveryAddress, Collection<OrderDetailWithPotentialLocations> items) {
-        final var locations = items.stream()
+    public Set<OrderDetail> selectLocationForItems(OrderWithPotentialLocations order) {
+        final var locations = order.getOrderDetails().stream()
                 .flatMap(od -> od.potentialLocations().stream())
                 .collect(toCollection(ArrayList::new));
 
-        final var productToQuantity = items.stream()
+        final var productToQuantity = order.getOrderDetails().stream()
                 .collect(toMap(OrderDetailWithPotentialLocations::product,
                         OrderDetailWithPotentialLocations::quantity));
 
@@ -49,7 +48,7 @@ public class ProximityBasedLocationSelectionAlgorithm implements LocationSelecti
             }
 
             final var addresses = Stream.concat(
-                    Stream.of(deliveryAddress),
+                    Stream.of(order.getDeliveryAddress()),
                     locations.stream()
                             .map(Location::getAddress)
             ).toList();
