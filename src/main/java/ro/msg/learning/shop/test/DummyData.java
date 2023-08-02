@@ -1,4 +1,4 @@
-package ro.msg.learning.shop;
+package ro.msg.learning.shop.test;
 
 import ro.msg.learning.shop.dto.AddressDTO;
 import ro.msg.learning.shop.model.Address;
