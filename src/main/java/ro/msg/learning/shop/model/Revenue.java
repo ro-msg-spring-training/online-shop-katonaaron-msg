@@ -20,4 +20,10 @@ public class Revenue extends EntityWithId {
     private LocalDate date;
 
     private BigDecimal sum;
+
+    public Revenue(Location location, LocalDate date, BigDecimal sum) {
+        this.location = location;
+        this.date = date;
+        this.sum = sum;
+    }
 }
