@@ -1,21 +1,21 @@
-package ro.msg.learning.shop.service;
+package ro.msg.learning.shop.test;
 
 import lombok.RequiredArgsConstructor;
 import org.flywaydb.core.Flyway;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ro.msg.learning.shop.DummyData;
 import ro.msg.learning.shop.model.Customer;
 import ro.msg.learning.shop.repository.LocationRepository;
 import ro.msg.learning.shop.repository.ProductCategoryRepository;
 import ro.msg.learning.shop.repository.ProductRepository;
 import ro.msg.learning.shop.repository.SupplierRepository;
+import ro.msg.learning.shop.service.CustomerService;
 
 @Service
 @RequiredArgsConstructor
 @Profile("integrationtest")
-public class IntegrationTestDBService {
+public class IntegrationTestDBServiceImpl implements IntegrationTestDBService {
     private final Flyway flyway;
 
     private final ProductRepository productRepository;
@@ -28,6 +28,7 @@ public class IntegrationTestDBService {
 
     private final CustomerService customerService;
 
+    @Override
     @Transactional
     public void clearAndPopulateDB() {
         flyway.clean();

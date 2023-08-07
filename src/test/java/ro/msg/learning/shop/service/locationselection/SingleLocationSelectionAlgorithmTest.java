@@ -14,11 +14,11 @@ import java.util.UUID;
 import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static ro.msg.learning.shop.DummyData.addressMSGBrassai;
-import static ro.msg.learning.shop.DummyData.coloredPencils;
-import static ro.msg.learning.shop.DummyData.createStocks;
-import static ro.msg.learning.shop.DummyData.johnSmith;
-import static ro.msg.learning.shop.DummyData.theJungleBook;
+import static ro.msg.learning.shop.test.DummyData.addressMSGBrassai;
+import static ro.msg.learning.shop.test.DummyData.coloredPencils;
+import static ro.msg.learning.shop.test.DummyData.createStocks;
+import static ro.msg.learning.shop.test.DummyData.johnSmith;
+import static ro.msg.learning.shop.test.DummyData.theJungleBook;
 
 class SingleLocationSelectionAlgorithmTest {
 

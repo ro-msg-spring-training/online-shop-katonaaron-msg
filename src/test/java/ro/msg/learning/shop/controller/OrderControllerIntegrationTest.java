@@ -9,13 +9,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import ro.msg.learning.shop.DummyData;
 import ro.msg.learning.shop.IntegrationTest;
 import ro.msg.learning.shop.dto.CreateOrderDTO;
 import ro.msg.learning.shop.dto.CreateOrderDetailDTO;
 import ro.msg.learning.shop.dto.OrderDTO;
 import ro.msg.learning.shop.dto.OrderDetailDTO;
 import ro.msg.learning.shop.model.Customer;
+import ro.msg.learning.shop.test.DummyData;
 
 import java.util.Base64;
 import java.util.List;
@@ -24,9 +24,9 @@ import java.util.regex.Pattern;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static ro.msg.learning.shop.DummyData.coloredPencils;
-import static ro.msg.learning.shop.DummyData.johnSmith;
-import static ro.msg.learning.shop.DummyData.theJungleBook;
+import static ro.msg.learning.shop.test.DummyData.coloredPencils;
+import static ro.msg.learning.shop.test.DummyData.johnSmith;
+import static ro.msg.learning.shop.test.DummyData.theJungleBook;
 
 public class OrderControllerIntegrationTest extends IntegrationTest {
     @NotNull
@@ -38,8 +38,7 @@ public class OrderControllerIntegrationTest extends IntegrationTest {
     @SneakyThrows
     public void setUp() {
         mvc.perform(MockMvcRequestBuilders
-                        .post("/db/clearAndPopulate")
-                        .header(HttpHeaders.AUTHORIZATION, getAuthorizationHeader(johnSmith)))
+                        .post("/test/clearAndPopulate"))
                 .andReturn();
     }
 
